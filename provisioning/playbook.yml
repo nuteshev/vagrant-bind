@@ -20,7 +20,7 @@
   - name: copy zones
     copy: src={{ item }} dest=/etc/named/ owner=root group=named mode=0660
     with_fileglob:
-      - named.d*
+      - named*lab*
   - name: copy resolv.conf to the servers
     copy: src=servers-resolv.conf dest=/etc/resolv.conf owner=root group=root mode=0644
   
@@ -44,9 +44,15 @@
   - name: ensure named is running and enabled
     service: name=named state=restarted enabled=yes
     
-- hosts: client
+- hosts: client*
+  serial: 2
   become: yes
   tasks:
+  - name: disable NetworkManager
+    systemd:
+      name: NetworkManager
+      state: stopped
+      enabled: no
   - name: copy resolv.conf to the client
     copy: src=client-resolv.conf dest=/etc/resolv.conf owner=root group=root mode=0644
   - name: copy rndc conf file

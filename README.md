@@ -1,18 +1,93 @@
-# Vagrant DNS Lab
+# Тестирование
 
-A Bind's DNS lab with Vagrant and Ansible, based on CentOS 7.
+С машины client1:
 
-# Playground
+```
+[vagrant@client1 ~]$ nslookup web1.dns.lab 192.168.50.10
+Server:         192.168.50.10
+Address:        192.168.50.10#53
 
-<code>
-    vagrant ssh client
-</code>
+Name:   web1.dns.lab
+Address: 192.168.50.15
 
-  * zones: dns.lab, reverse dns.lab and ddns.lab
-  * ns01 (192.168.50.10)
-    * master, recursive, allows update to ddns.lab
-  * ns02 (192.168.50.11)
-    * slave, recursive
-  * client (192.168.50.15)
-    * used to test the env, runs rndc and nsupdate
-  * zone transfer: TSIG key
+[vagrant@client1 ~]$ nslookup web2.dns.lab 192.168.50.10
+Server:         192.168.50.10
+Address:        192.168.50.10#53
+
+** server can't find web2.dns.lab: NXDOMAIN
+
+[vagrant@client1 ~]$ nslookup www.newdns.lab 192.168.50.10
+Server:         192.168.50.10
+Address:        192.168.50.10#53
+
+Name:   www.newdns.lab
+Address: 192.168.50.14
+Name:   www.newdns.lab
+Address: 192.168.50.15
+
+[vagrant@client1 ~]$ nslookup www.newdns.lab 192.168.50.11
+Server:         192.168.50.11
+Address:        192.168.50.11#53
+
+Name:   www.newdns.lab
+Address: 192.168.50.14
+Name:   www.newdns.lab
+Address: 192.168.50.15
+
+[vagrant@client1 ~]$ nslookup web1.dns.lab 192.168.50.11
+Server:         192.168.50.11
+Address:        192.168.50.11#53
+
+Name:   web1.dns.lab
+Address: 192.168.50.15
+
+[vagrant@client1 ~]$ nslookup web2.dns.lab 192.168.50.11
+Server:         192.168.50.11
+Address:        192.168.50.11#53
+
+** server can't find web2.dns.lab: NXDOMAIN
+```
+
+С машины client2:
+
+```
+[vagrant@client2 ~]$ nslookup web1.dns.lab 192.168.50.10
+Server:         192.168.50.10
+Address:        192.168.50.10#53
+
+Name:   web1.dns.lab
+Address: 192.168.50.15
+
+[vagrant@client2 ~]$ nslookup web2.dns.lab 192.168.50.10
+Server:         192.168.50.10
+Address:        192.168.50.10#53
+
+Name:   web2.dns.lab
+Address: 192.168.50.14
+
+[vagrant@client2 ~]$ nslookup www.newdns.lab 192.168.50.10
+Server:         192.168.50.10
+Address:        192.168.50.10#53
+
+** server can't find www.newdns.lab: NXDOMAIN
+
+[vagrant@client2 ~]$ nslookup www.newdns.lab 192.168.50.11
+Server:         192.168.50.11
+Address:        192.168.50.11#53
+
+** server can't find www.newdns.lab: NXDOMAIN
+
+[vagrant@client2 ~]$ nslookup web1.dns.lab 192.168.50.11
+Server:         192.168.50.11
+Address:        192.168.50.11#53
+
+Name:   web1.dns.lab
+Address: 192.168.50.15
+
+[vagrant@client2 ~]$ nslookup web2.dns.lab 192.168.50.11
+Server:         192.168.50.11
+Address:        192.168.50.11#53
+
+Name:   web2.dns.lab
+Address: 192.168.50.14
+```

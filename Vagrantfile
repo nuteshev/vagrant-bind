@@ -1,8 +1,16 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
+class FixGuestAdditions < VagrantVbguest::Installers::Linux
+    def install(opts=nil, &block)
+        communicate.sudo("yum update kernel -y; yum install -y gcc binutils make perl bzip2 kernel-devel kernel-headers", opts, &block)
+        super
+    end
+end
+
 Vagrant.configure(2) do |config|
   config.vm.box = "centos/7"
+  config.vbguest.installer = FixGuestAdditions
 
   config.vm.provision "ansible" do |ansible|
     ansible.verbose = "vvv"
@@ -25,9 +33,12 @@ Vagrant.configure(2) do |config|
     ns02.vm.hostname = "ns02"
   end
 
-  config.vm.define "client" do |client|
-    client.vm.network "private_network", ip: "192.168.50.15", virtualbox__intnet: "dns"
-    client.vm.hostname = "client"
+  config.vm.define "client1" do |client1|
+    client1.vm.network "private_network", ip: "192.168.50.15", virtualbox__intnet: "dns"
+    client1.vm.hostname = "client1"
   end
-
+  config.vm.define "client2" do |client2|
+    client2.vm.network "private_network", ip: "192.168.50.14", virtualbox__intnet: "dns"
+    client2.vm.hostname = "client2"
+  end
 end
